@@ -2,10 +2,12 @@
 #include "SudokuSolver.h"
 #include <cstdio>
 #include <stack>
-
+#include <cstdlib>
+#include <ctime>
 
 SudokuSolver::SudokuSolver()
 {
+	srand(time(NULL));
 }
 
 
@@ -24,7 +26,7 @@ void SudokuSolver::readFile(char fileName[], SudokuBoard &board)
 
 bool SudokuSolver::check(SudokuBoard& board)
 {
-	const int complete = 0x1ff;
+	const int complete = 0x3fe;
 	int temp;
 	//for lines
 	for (int i = 0; i < 9; i++)
@@ -73,9 +75,29 @@ bool SudokuSolver::dfs(SudokuBoard& board)
 		if (dfs(board))
 			return true;
 	}
+	//delete &solveVector;
 	board.set(target, 0);
+	return false;
 }
 
+SudokuBoard& SudokuSolver::generate(SudokuBoard &board)
+{
+	SudokuBoard *r = new SudokuBoard(board);
+	int x, y;
+	for (int i = 0; i < 2; i++)
+	{
+		x = rand() % 9;
+		y = rand() % 9;
+		if ((*r)[x][y] == 0)
+		{
+			auto solveVector = r->getSolveVector(x, y);
+			(*r)[x][y] = solveVector[rand() % solveVector.size()];
+			//delete &solveVector;
+		}
+	}
+	dfs(*r);
+	return *r;
+}
 bool *SudokuBoard::getBanArray(int x, int y)
 {
 	bool *banArray = new bool[10];
