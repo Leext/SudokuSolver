@@ -1,27 +1,53 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "SudokuSolver.h"
 #include <cstdio>
-#include <iostream>
 #include <utility>
 #include <cassert>
 #include <ctime>
-int main()
+int main(int argc,char **argv)
 {
+	if (argc < 3)
+	{
+		printf("not enough arguments!\n");
+		return 0;
+	}
 	SudokuSolver solver;
 	SudokuBoard board;
-	board[0][0] = 4;
-	clock_t t = clock();
-	SudokuBoard *c;
-	for (int i = 0; i < 20; i++)
+	if (strcmp("-c", argv[1]) == 0)
 	{
-		c = &solver.generate(board);
-		assert(solver.check(*c));
-		std::cout << c->toString() << std::endl;
-		delete c;
+		FILE* output = fopen("sudoku.txt", "w");
+		if (output == NULL)
+		{
+			printf("cannot open sudoku.txt");
+			return 0;
+		}
+		int n;
+		try
+		{
+			n = std::stoi(argv[2]);
+		}
+		catch (...)
+		{
+			printf("invalid argument %s", argv[2]);
+			return 0;
+		}
+		board.set(0, 0, 4);
+		fprintf(output, solver.generateN(n, board).c_str());
+		fclose(output);
 	}
-	t = clock() - t;
-	std::cout << "time comsumed" << ((double)t) / CLOCKS_PER_SEC << std::endl;
-	int x;
-	std::cin >> x;
+	else if (strcmp("-s", argv[1]) == 0)
+	{
+		if (!solver.readFile(argv[2], board))
+			return 0;
+		FILE* output = fopen("sudoku.txt", "w");
+		if (output == NULL)
+		{
+			printf("cannot open sudoku.txt");
+			return 0;
+		}
+		fprintf(output, solver.solve(board).toString().c_str());
+		fclose(output);
+	}
+	
 	return 0;
 }

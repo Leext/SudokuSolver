@@ -47,11 +47,12 @@ class SudokuSolver
 public:
 	SudokuSolver();
 	~SudokuSolver();
-	static void readFile(char fileName[], SudokuBoard &board);
+	static bool readFile(char fileName[], SudokuBoard &board);
 	static bool check(SudokuBoard& board);
 	SudokuBoard& solve(SudokuBoard& board);
 	bool dfs(SudokuBoard& board);
 	SudokuBoard& generate(SudokuBoard& board);
+	std::string generateN(int n,SudokuBoard& board);
 private:
 	SudokuBoard *solution;
 };

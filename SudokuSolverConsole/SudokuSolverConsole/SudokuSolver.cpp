@@ -15,9 +15,14 @@ SudokuSolver::~SudokuSolver()
 {
 }
 
-void SudokuSolver::readFile(char fileName[], SudokuBoard &board)
+bool SudokuSolver::readFile(char fileName[], SudokuBoard &board)
 {
 	FILE* input = fopen(fileName, "r");
+	if (input == NULL)
+	{
+		printf("invalid file path %s", fileName); 
+		return false;
+	}
 	for (int i = 0; i < 9; i++)
 		for (int j = 0; j < 9; j++)
 			fscanf(input, "%d", &board[i][j]);
@@ -80,6 +85,12 @@ bool SudokuSolver::dfs(SudokuBoard& board)
 	return false;
 }
 
+SudokuBoard& SudokuSolver::solve(SudokuBoard &board)
+{
+	SudokuBoard* r = new SudokuBoard(board);
+	dfs(*r);
+	return *r;
+}
 SudokuBoard& SudokuSolver::generate(SudokuBoard &board)
 {
 	SudokuBoard *r = new SudokuBoard(board);
@@ -97,6 +108,14 @@ SudokuBoard& SudokuSolver::generate(SudokuBoard &board)
 	}
 	dfs(*r);
 	return *r;
+}
+
+std::string SudokuSolver::generateN(int n, SudokuBoard &board)
+{
+	std::string r;
+	for (int i = 0; i < n; i++)
+		r += generate(board).toString() + '\n';
+	return r;
 }
 bool *SudokuBoard::getBanArray(int x, int y)
 {
