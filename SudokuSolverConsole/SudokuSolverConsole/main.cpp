@@ -12,6 +12,7 @@ int main(int argc, char **argv)
 	if (argc < 3)
 	{
 		copeGenerate("1000000");
+		//copeSolve("b.txt");
 		return 0;
 	}
 	if (strcmp("-c", argv[1]) == 0)

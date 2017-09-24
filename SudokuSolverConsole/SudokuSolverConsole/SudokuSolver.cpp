@@ -79,14 +79,23 @@ bool SudokuSolver::dfs(SudokuBoard& board)
 	}
 	if (target.second == -1) // no solution
 		return false;
-	auto solveVector = board.getSolveVector(target);
-	for (auto s : solveVector)
+	//auto solveVector = board.getSolveVector(target);
+	int feasible = board.getFeasible(target.first,target.second);
+	//for (auto s : solveVector)
+	//{
+	//	board.set(target, s);
+	//	if (dfs(board))
+	//		return true;
+	//}
+	for (int i = 1; i <= 10; i++)
 	{
-		board.set(target, s);
-		if (dfs(board))
-			return true;
+		if ((feasible >> i) & 1)
+		{
+			board.set(target, i);
+			if (dfs(board))
+				return true;
+		}
 	}
-	//delete &solveVector;
 	board.set(target, 0);
 	return false;
 }
@@ -133,31 +142,31 @@ std::string SudokuSolver::generateN(int n, SudokuBoard &board)
 	delete solutions;
 	return r;
 }
-bool *SudokuBoard::getBanArray(int x, int y)
+int SudokuBoard::getFeasible(int x, int y)
 {
-	bool *banArray = new bool[10];
-	for (int i = 0; i < 10; i++)
-		banArray[i] = false;
+	int bit = 0;
+	const int complete = 0x3fe;
 	for (int i = 0; i < 9; i++)
-		banArray[_board[i][y]] = true;
+		bit |= 1 << _board[i][y];
 	for (int j = 0; j < 9; j++)
-		banArray[_board[x][j]] = true;
+		bit |= 1 << _board[x][j];
 	int start_x = x / 3 * 3;
 	int start_y = y / 3 * 3;
 	for (int i = start_x; i < start_x + 3; i++)
 		for (int j = start_y; j < start_y + 3; j++)
-			banArray[_board[i][j]] = true;
-	return banArray;
+			bit |= 1 << _board[i][j];
+	return bit^complete;
 }
-int SudokuBoard::countPossibilties(int x, int y)
+int SudokuBoard::countFeasible(int x, int y)
 {
 	// _board[x][y] must be 0
-	bool *banArray = getBanArray(x, y);
+	int bit = getFeasible(x, y);
 	int count = 0;
-	for (int i = 1; i < 10; i++)
-		if (!banArray[i])
-			count++;
-	delete[] banArray;
+	while (bit)
+	{
+		bit &= (bit - 1);
+		count++;
+	}
 	return count;
 }
 
@@ -170,7 +179,7 @@ std::pair<int, int> SudokuBoard::findFewest()
 		for (int j = 0; j < 9; j++)
 			if (_board[i][j] == 0)
 			{
-				temp = countPossibilties(i, j);
+				temp = countFeasible(i, j);
 				if (temp == 0)
 					return std::pair<int, int>(0, -1);
 				if (temp < min)
@@ -185,12 +194,11 @@ std::pair<int, int> SudokuBoard::findFewest()
 
 std::vector<int>& SudokuBoard::getSolveVector(int x, int y)
 {
-	bool *banArray = getBanArray(x, y);
+	int feasilbe = getFeasible(x, y);
 	std::vector<int>* rtn = new std::vector<int>;
 	for (int i = 1; i < 10; i++)
-		if (!banArray[i])
+		if ((feasilbe >> i) & 1)
 			rtn->push_back(i);
-	delete banArray;
 	return *rtn;
 }
 

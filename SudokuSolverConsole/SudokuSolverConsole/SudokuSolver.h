@@ -30,8 +30,8 @@ public:
 	{
 		_board[p.first][p.second] = value;
 	}
-	bool *getBanArray(int x, int y);
-	int countPossibilties(int x, int y);
+	int getFeasible(int x, int y);
+	int countFeasible(int x, int y);
 	std::pair<int, int> findFewest();
 	std::vector<int>& getSolveVector(int x, int y);
 	std::vector<int>& getSolveVector(std::pair<int, int> grid)
