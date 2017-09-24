@@ -42,6 +42,7 @@ public:
 private:
 	int _board[9][9];
 };
+
 class SudokuSolver
 {
 public:
@@ -51,9 +52,12 @@ public:
 	static bool check(SudokuBoard& board);
 	SudokuBoard& solve(SudokuBoard& board);
 	bool dfs(SudokuBoard& board);
-	SudokuBoard& generate(SudokuBoard& board);
+	void generate(SudokuBoard& board);
 	std::string generateN(int n,SudokuBoard& board);
 private:
 	SudokuBoard *solution;
+	FILE *output;
+	int _solveCount, _solveLimit;
+	std::vector<std::string>* solutions;
 };
 

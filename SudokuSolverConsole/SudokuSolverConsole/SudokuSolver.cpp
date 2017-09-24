@@ -7,7 +7,7 @@
 
 SudokuSolver::SudokuSolver()
 {
-	srand(time(NULL));
+	srand((unsigned int)(time(NULL)));
 }
 
 
@@ -20,13 +20,14 @@ bool SudokuSolver::readFile(char fileName[], SudokuBoard &board)
 	FILE* input = fopen(fileName, "r");
 	if (input == NULL)
 	{
-		printf("invalid file path %s", fileName); 
+		printf("invalid file path %s", fileName);
 		return false;
 	}
 	for (int i = 0; i < 9; i++)
 		for (int j = 0; j < 9; j++)
 			fscanf(input, "%d", &board[i][j]);
 	fclose(input);
+	return true;
 }
 
 bool SudokuSolver::check(SudokuBoard& board)
@@ -70,7 +71,12 @@ bool SudokuSolver::dfs(SudokuBoard& board)
 {
 	std::pair<int, int>& target = board.findFewest();
 	if (target.first == -1) // end
-		return true;
+	{
+		_solveCount++;
+		//printf("count %d  limit%d\n", _solveCount, _solveLimit);
+		solutions->push_back(board.toString());
+		return _solveCount >= _solveLimit;
+	}
 	if (target.second == -1) // no solution
 		return false;
 	auto solveVector = board.getSolveVector(target);
@@ -88,14 +94,16 @@ bool SudokuSolver::dfs(SudokuBoard& board)
 SudokuBoard& SudokuSolver::solve(SudokuBoard &board)
 {
 	SudokuBoard* r = new SudokuBoard(board);
+	_solveCount = 0;
+	_solveLimit = 1;
 	dfs(*r);
 	return *r;
 }
-SudokuBoard& SudokuSolver::generate(SudokuBoard &board)
+void SudokuSolver::generate(SudokuBoard &board)
 {
 	SudokuBoard *r = new SudokuBoard(board);
 	int x, y;
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < 0; i++)
 	{
 		x = rand() % 9;
 		y = rand() % 9;
@@ -107,14 +115,22 @@ SudokuBoard& SudokuSolver::generate(SudokuBoard &board)
 		}
 	}
 	dfs(*r);
-	return *r;
 }
 
 std::string SudokuSolver::generateN(int n, SudokuBoard &board)
 {
 	std::string r;
-	for (int i = 0; i < n; i++)
-		r += generate(board).toString() + '\n';
+	//for (int i = 0; i < n; i++)
+		//r += generate(board).toString() + '\n';
+	_solveCount = 0;
+	_solveLimit = n;
+	solutions = new std::vector<std::string>();
+	generate(board);
+	for (std::string& s : *solutions)
+	{
+		r += s + '\n';
+	}
+	delete solutions;
 	return r;
 }
 bool *SudokuBoard::getBanArray(int x, int y)
