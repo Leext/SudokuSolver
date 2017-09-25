@@ -62,7 +62,7 @@ int copeSolve(char* arg)
 		printf("cannot open sudoku.txt");
 		return 0;
 	}
-	fprintf(output, solver.solve(board).toString().c_str());
+	fprintf(output, (*solver.solve(board).toString()).c_str());
 	fclose(output);
 	return 0;
 }

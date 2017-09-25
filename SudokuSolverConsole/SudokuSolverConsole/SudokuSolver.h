@@ -2,6 +2,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <memory>
 class SudokuBoard
 {
 public:
@@ -38,7 +39,7 @@ public:
 	{
 		return getSolveVector(grid.first, grid.second);
 	}
-	std::string& toString();
+	std::shared_ptr<std::string> toString();
 private:
 	int _board[9][9];
 };
@@ -53,11 +54,11 @@ public:
 	SudokuBoard& solve(SudokuBoard& board);
 	bool dfs(SudokuBoard& board);
 	void generate(SudokuBoard& board);
-	std::string generateN(int n,SudokuBoard& board);
+	std::string generateN(int n, SudokuBoard& board);
 private:
 	SudokuBoard *solution;
 	FILE *output;
 	int _solveCount, _solveLimit;
-	std::vector<std::string>* solutions;
+	std::vector<std::shared_ptr<std::string>>* solutions;
 };
 

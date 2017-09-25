@@ -4,6 +4,8 @@
 #include <stack>
 #include <cstdlib>
 #include <ctime>
+#include <memory>
+#include <string>
 
 SudokuSolver::SudokuSolver()
 {
@@ -73,20 +75,12 @@ bool SudokuSolver::dfs(SudokuBoard& board)
 	if (target.first == -1) // end
 	{
 		_solveCount++;
-		//printf("count %d  limit%d\n", _solveCount, _solveLimit);
 		solutions->push_back(board.toString());
 		return _solveCount >= _solveLimit;
 	}
 	if (target.second == -1) // no solution
 		return false;
-	//auto solveVector = board.getSolveVector(target);
-	int feasible = board.getFeasible(target.first,target.second);
-	//for (auto s : solveVector)
-	//{
-	//	board.set(target, s);
-	//	if (dfs(board))
-	//		return true;
-	//}
+	int feasible = board.getFeasible(target.first, target.second);
 	for (int i = 1; i <= 10; i++)
 	{
 		if ((feasible >> i) & 1)
@@ -99,6 +93,7 @@ bool SudokuSolver::dfs(SudokuBoard& board)
 	board.set(target, 0);
 	return false;
 }
+
 
 SudokuBoard& SudokuSolver::solve(SudokuBoard &board)
 {
@@ -133,12 +128,10 @@ std::string SudokuSolver::generateN(int n, SudokuBoard &board)
 		//r += generate(board).toString() + '\n';
 	_solveCount = 0;
 	_solveLimit = n;
-	solutions = new std::vector<std::string>();
+	solutions = new std::vector<std::shared_ptr<std::string>>();
 	generate(board);
-	for (std::string& s : *solutions)
-	{
-		r += s + '\n';
-	}
+	for (auto& s : *solutions)
+		r += *s + '\n';
 	delete solutions;
 	return r;
 }
@@ -202,14 +195,14 @@ std::vector<int>& SudokuBoard::getSolveVector(int x, int y)
 	return *rtn;
 }
 
-std::string& SudokuBoard::toString()
+std::shared_ptr<std::string> SudokuBoard::toString()
 {
-	std::string *r = new std::string();
+	auto rtn = std::shared_ptr<std::string>(new std::string());
 	for (int i = 0; i < 9; i++)
 		for (int j = 0; j < 9; j++)
 		{
-			r->push_back(_board[i][j] + '0');
-			r->push_back(j == 8 ? '\n' : ' ');
+			(*rtn).push_back(_board[i][j] + '0');
+			(*rtn).push_back(j == 8 ? '\n' : ' ');
 		}
-	return *r;
+	return rtn;
 }
