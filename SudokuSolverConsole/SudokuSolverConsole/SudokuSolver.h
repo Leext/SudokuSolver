@@ -23,6 +23,13 @@ public:
 			for (int j = 0; j < 9; j++)
 				(*this)[i][j] = c[i][j];
 	}
+
+	SudokuBoard(std::string &s)
+	{
+		for (int i = 0; i < 9; i++)
+			for (int j = 0; j < 9; j++)
+				_board[i][j] = s[i * 9 + j] - '0';
+	}
 	void set(int x, int y, int value)
 	{
 		_board[x][y] = value;
@@ -51,7 +58,7 @@ public:
 	~SudokuSolver();
 	static bool readFile(char fileName[], SudokuBoard &board);
 	static bool check(SudokuBoard& board);
-	SudokuBoard& solve(SudokuBoard& board);
+	SudokuBoard* solve(SudokuBoard& board);
 	bool dfs(SudokuBoard& board);
 	void generate(SudokuBoard& board);
 	std::string generateN(int n, SudokuBoard& board);

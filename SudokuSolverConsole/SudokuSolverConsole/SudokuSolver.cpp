@@ -95,13 +95,15 @@ bool SudokuSolver::dfs(SudokuBoard& board)
 }
 
 
-SudokuBoard& SudokuSolver::solve(SudokuBoard &board)
+SudokuBoard* SudokuSolver::solve(SudokuBoard &board)
 {
 	SudokuBoard* r = new SudokuBoard(board);
 	_solveCount = 0;
 	_solveLimit = 1;
-	dfs(*r);
-	return *r;
+	solutions = new std::vector<std::shared_ptr<std::string>>();
+	if (!dfs(*r))
+		return NULL;
+	return r;
 }
 void SudokuSolver::generate(SudokuBoard &board)
 {
@@ -153,7 +155,7 @@ int SudokuBoard::getFeasible(int x, int y)
 int SudokuBoard::countFeasible(int x, int y)
 {
 	// _board[x][y] must be 0
-	int bit = getFeasible(x, y);
+	int bit = getFeasible(x, y) >> 1;
 	int count = 0;
 	while (bit)
 	{
