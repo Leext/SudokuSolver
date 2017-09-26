@@ -12,11 +12,6 @@ int copeSolve(char* arg);
 void test();
 int main(int argc, char **argv)
 {
-	if (argc < 3)
-	{
-		test();
-		return 0;
-	}
 	if (strcmp("-c", argv[1]) == 0)
 		return copeGenerate(argv[2]);
 	else if (strcmp("-s", argv[1]) == 0)
@@ -87,6 +82,31 @@ void test()
 	SudokuSolver solver;
 	SudokuBoard *b = solver.solve(board);
 	assert(solver.check(*b));
+
+	board = SudokuBoard(std::string("000000010400000000020000000000050604008000300001090000300400200050100000000807000"));
+	b = solver.solve(board);
+	assert(solver.check(*b));
+
+	board = SudokuBoard(std::string("000000012003600000000007000410020000000500300700000600280000040000300500000000000"));
+	b = solver.solve(board);
+	assert(solver.check(*b));
+
+	board = SudokuBoard(std::string("000000012008030000000000040120500000000004700060000000507000300000620000000100000"));
+	b = solver.solve(board);
+	assert(solver.check(*b));
+
+	board = SudokuBoard(std::string("000000012040050000000009000070600400000100000000000050000087500601000300200000000"));
+	b = solver.solve(board);
+	assert(solver.check(*b));
+
+	board = SudokuBoard(std::string("000000012050400000000000030700600400001000000000080000920000800000510700000003000"));
+	b = solver.solve(board);
+	assert(solver.check(*b));
+
+	board = SudokuBoard(std::string("000000013000030080070000200000206000030000900000010000600500204000400700100000000"));
+	b = solver.solve(board);
+	assert(b == NULL);
+
 	solver.generate(board);
 	solver.generateN(3, board);
 	copeSolve("a.txt");
