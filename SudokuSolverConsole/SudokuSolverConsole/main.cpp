@@ -9,37 +9,14 @@
 
 int copeGenerate(char* arg);
 int copeSolve(char* arg);
+void test();
 int main(int argc, char **argv)
 {
-	//if (argc < 3)
-	//{
-	//	//copeGenerate("1000000");
-	//	//copeSolve("b.txt");
-	//	FILE *input = fopen("sudoku17.txt", "r");
-	//	char buffer[83];
-	//	SudokuSolver solver;
-	//	std::vector<std::shared_ptr<std::string>> solu;
-	//	int c = 0;
-	//	while (fgets(buffer, 83, input) != NULL)
-	//	{
-	//		SudokuBoard board = SudokuBoard(std::string(buffer));
-	//		SudokuBoard *so;
-	//		so = solver.solve(board);
-	//		if (so == NULL)
-	//		{
-	//			std::cout << "!!!!!!!!!!\n";
-	//			continue;
-	//		}
-	//		auto s = so->toString();
-	//		solu.push_back(s);
-	//		if (c++ > 2000)
-	//			break;
-	//	}
-	//	FILE *output = fopen("output.txt", "w");
-	//	for (auto& s : solu)
-	//		fprintf(output, (*s).c_str());
-	//	return 0;
-	//}
+	if (argc < 3)
+	{
+		test();
+		return 0;
+	}
 	if (strcmp("-c", argv[1]) == 0)
 		return copeGenerate(argv[2]);
 	else if (strcmp("-s", argv[1]) == 0)
@@ -93,4 +70,25 @@ int copeSolve(char* arg)
 	}
 	fclose(output);
 	return 0;
+}
+
+void test()
+{
+	SudokuBoard board = SudokuBoard(std::string("012345678000000000000000000000000000000000000000000000000000000000000000000000000"));
+	assert((1 << 8) == (board.getFeasible(0, 0) >> 1));
+	assert(1 == board.countFeasible(0, 0));
+	board = SudokuBoard(std::string("012345678900000000000000000000000000000000000000000000000000000000000000000000000"));
+	assert(0 == board.countFeasible(0, 0));
+	board = SudokuBoard(std::string("012300000400000000507000000000000000000000000600000000000000000600000000000000000"));
+	assert(2 == board.countFeasible(0, 0));
+	auto p = board.findFewest();
+	assert(0 == p.first && 0 == p.second);
+	board = SudokuBoard(std::string("000000010400000000020000000000050407008000300001090000300400200050100000000806000"));
+	SudokuSolver solver;
+	SudokuBoard *b = solver.solve(board);
+	assert(solver.check(*b));
+	solver.generate(board);
+	solver.generateN(3, board);
+	copeSolve("a.txt");
+	copeGenerate("10");
 }
