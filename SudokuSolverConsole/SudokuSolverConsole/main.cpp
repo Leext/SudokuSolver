@@ -11,35 +11,35 @@ int copeGenerate(char* arg);
 int copeSolve(char* arg);
 int main(int argc, char **argv)
 {
-	if (argc < 3)
-	{
-		//copeGenerate("1000000");
-		//copeSolve("b.txt");
-		FILE *input = fopen("sudoku17.txt", "r");
-		char buffer[83];
-		SudokuSolver solver;
-		std::vector<std::shared_ptr<std::string>> solu;
-		int c = 0;
-		while (fgets(buffer, 83, input) != NULL)
-		{
-			SudokuBoard board = SudokuBoard(std::string(buffer));
-			SudokuBoard *so;
-			so = solver.solve(board);
-			if (so == NULL)
-			{
-				std::cout << "!!!!!!!!!!\n";
-				continue;
-			}
-			auto s = so->toString();
-			solu.push_back(s);
-			if (c++ > 2000)
-				break;
-		}
-		FILE *output = fopen("output.txt", "w");
-		for (auto& s : solu)
-			fprintf(output, (*s).c_str());
-		return 0;
-	}
+	//if (argc < 3)
+	//{
+	//	//copeGenerate("1000000");
+	//	//copeSolve("b.txt");
+	//	FILE *input = fopen("sudoku17.txt", "r");
+	//	char buffer[83];
+	//	SudokuSolver solver;
+	//	std::vector<std::shared_ptr<std::string>> solu;
+	//	int c = 0;
+	//	while (fgets(buffer, 83, input) != NULL)
+	//	{
+	//		SudokuBoard board = SudokuBoard(std::string(buffer));
+	//		SudokuBoard *so;
+	//		so = solver.solve(board);
+	//		if (so == NULL)
+	//		{
+	//			std::cout << "!!!!!!!!!!\n";
+	//			continue;
+	//		}
+	//		auto s = so->toString();
+	//		solu.push_back(s);
+	//		if (c++ > 2000)
+	//			break;
+	//	}
+	//	FILE *output = fopen("output.txt", "w");
+	//	for (auto& s : solu)
+	//		fprintf(output, (*s).c_str());
+	//	return 0;
+	//}
 	if (strcmp("-c", argv[1]) == 0)
 		return copeGenerate(argv[2]);
 	else if (strcmp("-s", argv[1]) == 0)
@@ -77,23 +77,20 @@ int copeGenerate(char* arg)
 
 int copeSolve(char* arg)
 {
-	SudokuBoard board;
 	SudokuSolver solver;
-	if (!solver.readFile(arg, board))
-		return 0;
+	auto puzzles = solver.readFile(arg);
 	FILE* output = fopen("sudoku.txt", "w");
 	if (output == NULL)
 	{
 		printf("cannot open sudoku.txt");
 		return 0;
 	}
-	SudokuBoard *s = solver.solve(board);
-	if (s == NULL)
+	for (auto p : puzzles)
 	{
-		printf("no solution\n");
-		return 0;
+		SudokuBoard *s = solver.solve(*p);
+		fprintf(output, "%s\n", (*(s->toString())).c_str());
+		delete s;
 	}
-	fprintf(output, (*(s->toString())).c_str());
 	fclose(output);
 	return 0;
 }

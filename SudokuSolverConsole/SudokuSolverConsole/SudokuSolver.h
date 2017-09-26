@@ -57,6 +57,7 @@ public:
 	SudokuSolver();
 	~SudokuSolver();
 	static bool readFile(char fileName[], SudokuBoard &board);
+	static std::vector<std::shared_ptr<SudokuBoard>> readFile(char fileName[]);
 	static bool check(SudokuBoard& board);
 	SudokuBoard* solve(SudokuBoard& board);
 	bool dfs(SudokuBoard& board);

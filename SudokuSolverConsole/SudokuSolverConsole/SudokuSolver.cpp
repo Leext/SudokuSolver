@@ -32,6 +32,34 @@ bool SudokuSolver::readFile(char fileName[], SudokuBoard &board)
 	return true;
 }
 
+std::vector<std::shared_ptr<SudokuBoard>> SudokuSolver::readFile(char fileName[])
+{
+	std::vector<std::shared_ptr<SudokuBoard>> rtn;
+	FILE* input = fopen(fileName, "r");
+	if (input == NULL)
+	{
+		printf("invalid file path %s", fileName);
+		return rtn;
+	}
+	char buf[19];
+	while (true)
+	{
+		auto board = std::shared_ptr<SudokuBoard>(new SudokuBoard());
+		for (int i = 0; i < 9; i++)
+		{
+			fgets(buf, 19, input);
+			for (int j = 0; j < 9; j++)
+				(*board)[i][j] = buf[j * 2] - '0';
+		}
+		rtn.push_back(board);
+		if (fgets(buf, 19, input) == NULL)
+			break;
+	}
+	fclose(input);
+	return rtn;
+}
+
+
 bool SudokuSolver::check(SudokuBoard& board)
 {
 	const int complete = 0x3fe;
