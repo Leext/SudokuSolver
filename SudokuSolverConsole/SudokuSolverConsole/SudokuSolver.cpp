@@ -12,14 +12,13 @@ SudokuSolver::SudokuSolver()
 	srand((unsigned int)(time(NULL)));
 }
 
-
 SudokuSolver::~SudokuSolver()
 {
 }
 
 bool SudokuSolver::readFile(char fileName[], SudokuBoard &board)
 {
-	FILE* input = fopen(fileName, "r");
+	FILE *input = fopen(fileName, "r");
 	if (input == NULL)
 	{
 		printf("invalid file path %s", fileName);
@@ -35,7 +34,7 @@ bool SudokuSolver::readFile(char fileName[], SudokuBoard &board)
 std::vector<std::shared_ptr<SudokuBoard>> SudokuSolver::readFile(char fileName[])
 {
 	std::vector<std::shared_ptr<SudokuBoard>> rtn;
-	FILE* input = fopen(fileName, "r");
+	FILE *input = fopen(fileName, "r");
 	if (input == NULL)
 	{
 		printf("invalid file path %s", fileName);
@@ -59,8 +58,7 @@ std::vector<std::shared_ptr<SudokuBoard>> SudokuSolver::readFile(char fileName[]
 	return rtn;
 }
 
-
-bool SudokuSolver::check(SudokuBoard& board)
+bool SudokuSolver::check(SudokuBoard &board)
 {
 	const int complete = 0x3fe;
 	int temp;
@@ -74,7 +72,7 @@ bool SudokuSolver::check(SudokuBoard& board)
 			return false;
 	}
 	//for columns
-	for (int j = 0; j < 0; j++)
+	for (int j = 0; j < 9; j++)
 	{
 		temp = 0;
 		for (int i = 0; i < 9; i++)
@@ -97,9 +95,9 @@ bool SudokuSolver::check(SudokuBoard& board)
 	return true;
 }
 
-bool SudokuSolver::dfs(SudokuBoard& board)
+bool SudokuSolver::dfs(SudokuBoard &board)
 {
-	std::pair<int, int>& target = board.findFewest();
+	std::pair<int, int> &target = board.findFewest();
 	if (target.first == -1) // end
 	{
 		_solveCount++;
@@ -122,10 +120,9 @@ bool SudokuSolver::dfs(SudokuBoard& board)
 	return false;
 }
 
-
-SudokuBoard* SudokuSolver::solve(SudokuBoard &board)
+SudokuBoard *SudokuSolver::solve(SudokuBoard &board)
 {
-	SudokuBoard* r = new SudokuBoard(board);
+	SudokuBoard *r = new SudokuBoard(board);
 	_solveCount = 0;
 	_solveLimit = 1;
 	solutions = new std::vector<std::shared_ptr<std::string>>();
@@ -155,12 +152,12 @@ std::string SudokuSolver::generateN(int n, SudokuBoard &board)
 {
 	std::string r;
 	//for (int i = 0; i < n; i++)
-		//r += generate(board).toString() + '\n';
+	//r += generate(board).toString() + '\n';
 	_solveCount = 0;
 	_solveLimit = n;
 	solutions = new std::vector<std::shared_ptr<std::string>>();
 	generate(board);
-	for (auto& s : *solutions)
+	for (auto &s : *solutions)
 		r += *s + '\n';
 	delete solutions;
 	return r;
@@ -178,7 +175,7 @@ int SudokuBoard::getFeasible(int x, int y)
 	for (int i = start_x; i < start_x + 3; i++)
 		for (int j = start_y; j < start_y + 3; j++)
 			bit |= 1 << _board[i][j];
-	return bit^complete;
+	return bit ^ complete;
 }
 int SudokuBoard::countFeasible(int x, int y)
 {
@@ -215,10 +212,10 @@ std::pair<int, int> SudokuBoard::findFewest()
 	return minPair;
 }
 
-std::vector<int>& SudokuBoard::getSolveVector(int x, int y)
+std::vector<int> &SudokuBoard::getSolveVector(int x, int y)
 {
 	int feasilbe = getFeasible(x, y);
-	std::vector<int>* rtn = new std::vector<int>;
+	std::vector<int> *rtn = new std::vector<int>;
 	for (int i = 1; i < 10; i++)
 		if ((feasilbe >> i) & 1)
 			rtn->push_back(i);
