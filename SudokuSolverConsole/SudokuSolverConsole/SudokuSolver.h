@@ -63,6 +63,9 @@ public:
 	bool dfs(SudokuBoard& board);
 	void generate(SudokuBoard& board);
 	std::string generateN(int n, SudokuBoard& board);
+	static void generate(int number,int mode, int result[][81]);
+	static void generate(int number, int lower, int upper, bool unique, int result[][81]);
+	static bool solve(int puzzle[], int solution[]);
 private:
 	SudokuBoard *solution;
 	FILE *output;
