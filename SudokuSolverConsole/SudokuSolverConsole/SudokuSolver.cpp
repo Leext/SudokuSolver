@@ -6,6 +6,7 @@
 #include <ctime>
 #include <memory>
 #include <string>
+#include <cassert>
 
 SudokuSolver::SudokuSolver()
 {
@@ -24,9 +25,12 @@ bool SudokuSolver::readFile(char fileName[], SudokuBoard &board)
 		printf("invalid file path %s", fileName);
 		return false;
 	}
-	for (int i = 0; i < 9; i++)
-		for (int j = 0; j < 9; j++)
-			fscanf(input, "%d", &board[i][j]);
+	int t;
+	for (int i = 0; i < 81; i++)
+	{
+		fscanf(input, "%d", &t);
+		board[i] = t;
+	}
 	fclose(input);
 	return true;
 }
@@ -48,7 +52,8 @@ std::vector<std::shared_ptr<SudokuBoard>> SudokuSolver::readFile(char fileName[]
 		{
 			fgets(buf, 19, input);
 			for (int j = 0; j < 9; j++)
-				(*board)[i][j] = buf[j * 2] - '0';
+				//(*board)[i][j] = buf[j * 2] - '0';
+				(*board).set(i, j, buf[j * 2] - '0');
 		}
 		rtn.push_back(board);
 		if (fgets(buf, 19, input) == NULL)
@@ -67,7 +72,7 @@ bool SudokuSolver::check(SudokuBoard &board)
 	{
 		temp = 0;
 		for (int j = 0; j < 9; j++)
-			temp |= 1 << board[i][j];
+			temp |= 1 << board.loc(i, j);
 		if (temp != complete)
 			return false;
 	}
@@ -76,7 +81,7 @@ bool SudokuSolver::check(SudokuBoard &board)
 	{
 		temp = 0;
 		for (int i = 0; i < 9; i++)
-			temp |= 1 << board[i][j];
+			temp |= 1 << board.loc(i, j);
 		if (temp != complete)
 			return false;
 	}
@@ -88,7 +93,7 @@ bool SudokuSolver::check(SudokuBoard &board)
 		temp = 0;
 		for (int i = start_x; i < start_x + 3; i++)
 			for (int j = start_y; j < start_y + 3; j++)
-				temp |= 1 << board[i][j];
+				temp |= 1 << board.loc(i, j);
 		if (temp != complete)
 			return false;
 	}
@@ -119,7 +124,57 @@ bool SudokuSolver::dfs(SudokuBoard &board)
 	board.set(target, 0);
 	return false;
 }
-
+bool SudokuSolver::fill(SudokuBoard &board, int& tryCount)
+{
+	if (tryCount > 100000)
+		return false;
+	std::pair<int, int> &target = board.findFewest();
+	if (target.first == -1) // end
+		return true;
+	if (target.second == -1) // no solution
+		return false;
+	int feasible = board.getFeasible(target.first, target.second);
+	for (int i = 1; i <= 10; i++)
+	{
+		if ((feasible >> i) & 1)
+		{
+			board.set(target, i);
+			tryCount++;
+			if (fill(board, tryCount))
+				return true;
+		}
+	}
+	board.set(target, 0);
+	return false;
+}
+bool search(SudokuBoard& board, int& count)
+{
+	std::pair<int, int> &target = board.findFewest();
+	if (target.first == -1) // end
+	{
+		count++;
+		return count >= 2;
+	}
+	if (target.second == -1) // no solution
+		return false;
+	int feasible = board.getFeasible(target.first, target.second);
+	for (int i = 1; i <= 10; i++)
+	{
+		if ((feasible >> i) & 1)
+		{
+			board.set(target, i);
+			if (search(board, count))
+				return true;
+		}
+	}
+	board.set(target, 0);
+	return false;
+}
+bool SudokuSolver::isU(SudokuBoard board)
+{
+	int c = 0;
+	return !search(board, c);
+}
 SudokuBoard *SudokuSolver::solve(SudokuBoard &board)
 {
 	SudokuBoard *r = new SudokuBoard(board);
@@ -130,18 +185,18 @@ SudokuBoard *SudokuSolver::solve(SudokuBoard &board)
 		return NULL;
 	return r;
 }
-void SudokuSolver::generate(SudokuBoard &board)
+void SudokuSolver::generate(SudokuBoard &board, int initNum)
 {
 	SudokuBoard *r = new SudokuBoard(board);
 	int x, y;
-	for (int i = 0; i < 0; i++)
+	for (int i = 0; i < initNum; i++)
 	{
 		x = rand() % 9;
 		y = rand() % 9;
-		if ((*r)[x][y] == 0)
+		if ((*r).loc(x, y) == 0)
 		{
 			auto solveVector = r->getSolveVector(x, y);
-			(*r)[x][y] = solveVector[rand() % solveVector.size()];
+			(*r)[x * 9 + y] = solveVector[rand() % solveVector.size()];
 			//delete &solveVector;
 		}
 	}
@@ -156,7 +211,7 @@ std::string SudokuSolver::generateN(int n, SudokuBoard &board)
 	_solveCount = 0;
 	_solveLimit = n;
 	solutions = new std::vector<std::shared_ptr<std::string>>();
-	generate(board);
+	generate(board, 0);
 	for (auto &s : *solutions)
 		r += *s + '\n';
 	delete solutions;
@@ -167,16 +222,17 @@ int SudokuBoard::getFeasible(int x, int y)
 	int bit = 0;
 	const int complete = 0x3fe;
 	for (int i = 0; i < 9; i++)
-		bit |= 1 << _board[i][y];
+		bit |= 1 << loc(i, y);
 	for (int j = 0; j < 9; j++)
-		bit |= 1 << _board[x][j];
+		bit |= 1 << loc(x, j);
 	int start_x = x / 3 * 3;
 	int start_y = y / 3 * 3;
 	for (int i = start_x; i < start_x + 3; i++)
 		for (int j = start_y; j < start_y + 3; j++)
-			bit |= 1 << _board[i][j];
+			bit |= 1 << loc(i, j);
 	return bit ^ complete;
 }
+
 int SudokuBoard::countFeasible(int x, int y)
 {
 	// _board[x][y] must be 0
@@ -197,7 +253,7 @@ std::pair<int, int> SudokuBoard::findFewest()
 	std::pair<int, int> minPair(-1, 0);
 	for (int i = 0; i < 9; i++)
 		for (int j = 0; j < 9; j++)
-			if (_board[i][j] == 0)
+			if (loc(i, j) == 0)
 			{
 				temp = countFeasible(i, j);
 				if (temp == 0)
@@ -211,7 +267,48 @@ std::pair<int, int> SudokuBoard::findFewest()
 			}
 	return minPair;
 }
-
+int SudokuBoard::findF()
+{
+	int min = 100;
+	int temp;
+	int minN;
+	int mem;
+	for (int i = 0; i < 81; i++)
+		if (_board[i] != 0)
+		{
+			mem = _board[i];
+			_board[i] = 0;
+			temp = countFeasible(i);
+			if (temp < min)
+			{
+				min = temp;
+				minN = i;
+			}
+			_board[i] = mem;
+		}
+	return minN;
+}
+int SudokuBoard::findMost()
+{
+	int max = 0;
+	int temp;
+	int maxN;
+	int mem;
+	for (int i = 0; i < 81; i++)
+		if (_board[i] != 0)
+		{
+			mem = _board[i];
+			_board[i] = 0;
+			temp = countFeasible(i);
+			if (temp > max)
+			{
+				max = temp;
+				maxN = i;
+			}
+			_board[i] = mem;
+		}
+	return maxN;
+}
 std::vector<int> &SudokuBoard::getSolveVector(int x, int y)
 {
 	int feasilbe = getFeasible(x, y);
@@ -221,15 +318,170 @@ std::vector<int> &SudokuBoard::getSolveVector(int x, int y)
 			rtn->push_back(i);
 	return *rtn;
 }
-
+int SudokuBoard::getRandFeasible(int x, int y)
+{
+	int feasible = getFeasible(x, y);
+	int count = 0;
+	int s[9];
+	for (int i = 1; i <= 9; i++)
+		if ((feasible >> i) & 1)
+			s[count++] = i;
+	return s[rand() % count];
+}
 std::shared_ptr<std::string> SudokuBoard::toString()
 {
 	auto rtn = std::shared_ptr<std::string>(new std::string());
-	for (int i = 0; i < 9; i++)
-		for (int j = 0; j < 9; j++)
-		{
-			(*rtn).push_back(_board[i][j] + '0');
-			(*rtn).push_back(j == 8 ? '\n' : ' ');
-		}
+	for (int i = 0; i < 81; i++)
+	{
+		(*rtn).push_back(_board[i] + '0');
+		(*rtn).push_back(((i + 1) % 9) == 0 ? '\n' : ' ');
+	}
 	return rtn;
+}
+
+void SudokuSolver::generateFinal(int initNum, int result[81])
+{
+	SudokuBoard r;
+	int x, y;
+	while (true)
+	{
+		for (int i = 0; i < initNum; i++)
+		{
+			while (true)
+			{
+				x = rand() % 9;
+				y = rand() % 9;
+				if (r.loc(x, y) == 0)
+				{
+					r.set(x, y, r.getRandFeasible(x, y));
+					break;
+				}
+			}
+		}
+		if (fill(r, x))
+		{
+			r.copyTo(result);
+			return;
+		}
+		else
+			r.clear();
+	}
+}
+void SudokuSolver::generateFinal(int initNum, SudokuBoard& result)
+{
+	SudokuBoard r;
+	int x, y;
+	while (true)
+	{
+		for (int i = 0; i < initNum; i++)
+		{
+			while (true)
+			{
+				x = rand() % 9;
+				y = rand() % 9;
+				if (r.loc(x, y) == 0)
+				{
+					r.set(x, y, r.getRandFeasible(x, y));
+					break;
+				}
+			}
+		}
+		if (fill(r, x))
+		{
+			r.copyTo(result);
+			return;
+		}
+		else
+			r.clear();
+	}
+}
+double SudokuSolver::evalDifficulty(SudokuBoard board)
+{
+	int blank = 0;
+	int feasibleSolveCount = 0;
+	int tryCount = 0;
+	for (int i = 0; i < 81; i++)
+	{
+		if (board[i] == 0)
+		{
+			blank++;
+			feasibleSolveCount += board.countFeasible(i);
+		}
+	}
+	fill(board, tryCount);
+	//printf("blank %d  FSC %d  rate %f  tryC %d\n", blank, feasibleSolveCount, (double)feasibleSolveCount / blank, tryCount);
+	return tryCount;
+}
+void SudokuSolver::makeBlank(SudokuBoard& board, int num)
+{
+	int x;
+	int i;
+	for (i = 0; i < num / 5; i++)
+	{
+		while (true)
+		{
+			x = rand() % 81;
+			if (board[x] != 0)
+			{
+				board[x] = 0;
+				break;
+			}
+		}
+	}
+	//for (; i < num*0.5; i++)
+	//{
+	//	x = board.findMost();
+	//	board[x] = 0;
+	//}
+	for (; i < num; i++)
+		board[board.findF()] = 0;
+}
+void SudokuSolver::generate(int mode, int result[81])
+{
+
+}
+void SudokuSolver::generate(int number, int mode, int result[][81])
+{
+	int r;
+	int tryCountL, tryCountR;
+	srand(time(NULL));
+	switch (mode)
+	{
+	case 2:
+		r = 60;
+		tryCountL = 200;
+		tryCountR = 2000;
+		break;
+	case 3:
+		r = 64;
+		tryCountL = 2000;
+		tryCountR = 100000;
+		break;
+	case 1:
+	default:
+		r = 45;
+		tryCountL = 10;
+		tryCountR = 200;
+		break;
+	}
+	SudokuBoard b;
+	int difficulty;
+	for (int i = 0; i < number; i++)
+	{
+		while (true)
+		{
+			SudokuSolver::generateFinal(11, b);
+			SudokuSolver::makeBlank(b, r);
+			difficulty = SudokuSolver::evalDifficulty(b);
+			if (difficulty >= tryCountL && difficulty < tryCountR)
+				break;
+			b.clear();
+		}
+		b.copyTo(result[i]);
+	}
+}
+void SudokuSolver::generate(int number, int lower, int upper, bool unique, int result[][81])
+{
+
+
 }

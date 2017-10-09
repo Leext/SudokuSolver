@@ -10,12 +10,28 @@
 int copeGenerate(char* arg);
 int copeSolve(char* arg);
 void test();
+int result[10000][81];
 int main(int argc, char **argv)
 {
-	if (strcmp("-c", argv[1]) == 0)
-		return copeGenerate(argv[2]);
-	else if (strcmp("-s", argv[1]) == 0)
-		return copeSolve(argv[2]);
+	SudokuBoard b = SudokuBoard(std::string("000000010400000000020000000000050604008000300001090000300400200050100000000807000"));
+	SudokuSolver::evalDifficulty(b);
+
+	SudokuSolver::generate(10000, 2, result);
+	for (int i = 0; i < 100; i++)
+	{
+		for (int j = 0; j < 81; j++)
+			printf("%d", result[i][j]);
+		printf("\n");
+	}
+	int t;
+	std::cin >> t;
+	if (argc > 2)
+	{
+		if (strcmp("-c", argv[1]) == 0)
+			return copeGenerate(argv[2]);
+		else if (strcmp("-s", argv[1]) == 0)
+			return copeSolve(argv[2]);
+	}
 	return 0;
 }
 
@@ -107,7 +123,7 @@ void test()
 	b = solver.solve(board);
 	assert(b == NULL);
 
-	solver.generate(board);
+	//solver.generate(board);
 	solver.generateN(3, board);
 	copeSolve("a.txt");
 	copeGenerate("10");
