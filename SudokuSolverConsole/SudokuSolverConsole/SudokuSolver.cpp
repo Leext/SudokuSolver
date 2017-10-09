@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <cassert>
+#include <unordered_set>
 
 SudokuSolver::SudokuSolver()
 {
@@ -147,7 +148,7 @@ bool SudokuSolver::fill(SudokuBoard &board, int& tryCount)
 	board.set(target, 0);
 	return false;
 }
-bool search(SudokuBoard& board, int& count)
+bool SudokuSolver::search(SudokuBoard& board, int& count)
 {
 	std::pair<int, int> &target = board.findFewest();
 	if (target.first == -1) // end
@@ -436,9 +437,12 @@ void SudokuSolver::makeBlank(SudokuBoard& board, int num)
 	for (; i < num; i++)
 		board[board.findF()] = 0;
 }
-void SudokuSolver::generate(int mode, int result[81])
+void SudokuSolver::generate(int blank, int result[81])
 {
-
+	SudokuBoard b;
+	generateFinal(11, b);
+	makeBlank(b, blank);
+	b.copyTo(result);
 }
 void SudokuSolver::generate(int number, int mode, int result[][81])
 {
@@ -480,8 +484,55 @@ void SudokuSolver::generate(int number, int mode, int result[][81])
 		b.copyTo(result[i]);
 	}
 }
+void SudokuSolver::generateU(int blank, int result[81])
+{
+	SudokuBoard b;
+	int mem;
+	int count = 0;
+	generateFinal(11, b);
+	for (int i = 0; i < 81 && count < blank; i++)
+	{
+		mem = b[i];
+		b[i] = 0;
+		if (isU(b))
+		{
+			count++;
+			continue;
+		}
+		b[i] = mem;
+	}
+	b.copyTo(result);
+}
+
 void SudokuSolver::generate(int number, int lower, int upper, bool unique, int result[][81])
 {
-
-
+	srand(time(NULL));
+	int blank = lower + (upper - lower) != 0 ? rand() % (upper - lower) : 0;
+	std::unordered_set<std::string> set;
+	if (unique)
+	{
+		for (int i = 0; i < number; i++)
+		{
+			SudokuSolver::generateU(blank, result[i]);
+			auto s = SudokuBoard::toLineString(result[i]);
+			auto got = set.find(s);
+			if (got == set.end())
+				set.insert(s);
+			else
+				i--;
+		}
+	}
+	else
+	{
+		for (int i = 0; i < number; i++)
+		{
+			SudokuSolver::generate(blank, result[i]);
+			auto s = SudokuBoard::toLineString(result[i]);
+			auto got = set.find(s);
+			if (got == set.end())
+				set.insert(s);
+			else 
+				i--;
+		}
+	}
 }

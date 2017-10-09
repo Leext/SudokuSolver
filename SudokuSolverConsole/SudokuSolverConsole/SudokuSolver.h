@@ -74,6 +74,13 @@ public:
 	}
 	int getRandFeasible(int x, int y);
 	std::shared_ptr<std::string> toString();
+	static std::string toLineString(int b[81])
+	{
+		std::string r(81, 0);
+		for (int i = 0; i < 81; i++)
+			r[i] = b[i];
+		return r;
+	}
 private:
 	int _board[81];
 };
@@ -95,11 +102,12 @@ public:
 	static bool fill(SudokuBoard& board, int &tryCount);
 	static double evalDifficulty(SudokuBoard board);
 	static bool isU(SudokuBoard board);
-	static bool search(SudokuBoard& board,int&);
+	static bool search(SudokuBoard& board, int&);
 	static void makeBlank(SudokuBoard& board, int num);
 	static void generate(int number, int mode, int result[][81]);
-	static void generate(int mode,int result[81]);
+	static void generate(int blank, int result[81]);
 	static void generate(int number, int lower, int upper, bool unique, int result[][81]);
+	static void generateU(int n, int result[81]);
 	static bool solve(int puzzle[], int solution[]);
 	static int loc(int x, int y)
 	{

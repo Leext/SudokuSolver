@@ -6,6 +6,7 @@
 #include <ctime>
 #include <iostream>
 #include <cstdlib>
+#include <unordered_set>
 
 int copeGenerate(char* arg);
 int copeSolve(char* arg);
@@ -15,14 +16,17 @@ int main(int argc, char **argv)
 {
 	SudokuBoard b = SudokuBoard(std::string("000000010400000000020000000000050604008000300001090000300400200050100000000807000"));
 	SudokuSolver::evalDifficulty(b);
-
-	SudokuSolver::generate(10000, 2, result);
-	for (int i = 0; i < 100; i++)
-	{
-		for (int j = 0; j < 81; j++)
-			printf("%d", result[i][j]);
-		printf("\n");
-	}
+	int r[81];
+	srand(time(NULL));
+	SudokuSolver::generate(10000, 33, 44, false, result);
+	printf("end");
+	//SudokuSolver::generate(10000, 2, result);
+	//for (int i = 0; i < 100; i++)
+	//{
+	//	for (int j = 0; j < 81; j++)
+	//		printf("%d", result[i][j]);
+	//	printf("\n");
+	//}
 	int t;
 	std::cin >> t;
 	if (argc > 2)
