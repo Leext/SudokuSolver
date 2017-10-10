@@ -36,14 +36,13 @@ bool SudokuSolver::readFile(char fileName[], SudokuBoard &board)
 	return true;
 }
 
-std::vector<std::shared_ptr<SudokuBoard>> SudokuSolver::readFile(char fileName[])
+void SudokuSolver::readFile(char fileName[], std::vector<std::shared_ptr<SudokuBoard>>& result)
 {
-	std::vector<std::shared_ptr<SudokuBoard>> rtn;
 	FILE *input = fopen(fileName, "r");
 	if (input == NULL)
 	{
 		printf("invalid file path %s", fileName);
-		return rtn;
+		return;
 	}
 	char buf[19];
 	while (true)
@@ -56,15 +55,33 @@ std::vector<std::shared_ptr<SudokuBoard>> SudokuSolver::readFile(char fileName[]
 				//(*board)[i][j] = buf[j * 2] - '0';
 				(*board).set(i, j, buf[j * 2] - '0');
 		}
-		rtn.push_back(board);
+		result.push_back(board);
 		if (fgets(buf, 19, input) == NULL)
 			break;
 	}
 	fclose(input);
-	return rtn;
 }
-
-bool SudokuSolver::check(SudokuBoard &board)
+void SudokuSolver::readFileLine(char fileName[], std::vector<std::shared_ptr<SudokuBoard>>& result)
+{
+	FILE *input = fopen(fileName, "r");
+	if (input == NULL)
+	{
+		printf("invalid file path %s", fileName);
+		return;
+	}
+	char buf[100];
+	while (true)
+	{
+		auto r = fgets(buf, 100, input);
+		if (r == NULL)
+			break;
+		auto board = std::shared_ptr<SudokuBoard>(new SudokuBoard());
+		for (int i = 0; i < 81; i++)
+			(*board)[i] = buf[i] - '0';
+		result.push_back(board);
+	}
+}
+bool SudokuSolver::check(const SudokuBoard &board)
 {
 	const int complete = 0x3fe;
 	int temp;
@@ -417,7 +434,7 @@ void SudokuSolver::makeBlank(SudokuBoard& board, int num)
 {
 	int x;
 	int i;
-	for (i = 0; i < num / 5; i++)
+	for (i = 0; i < num && i < 2; i++)
 	{
 		while (true)
 		{
@@ -454,13 +471,11 @@ void SudokuSolver::generate(int number, int mode, int result[][81])
 	case 2:
 		r = 60;
 		tryCountL = 200;
-		tryCountR = 2000;
+		tryCountR = 200000;
 		break;
 	case 3:
-		r = 64;
-		tryCountL = 2000;
-		tryCountR = 100000;
-		break;
+		generateHard(number, result);
+		return;
 	case 1:
 	default:
 		r = 45;
@@ -488,26 +503,29 @@ void SudokuSolver::generateU(int blank, int result[81])
 {
 	SudokuBoard b;
 	int mem;
-	int count = 0;
-	generateFinal(11, b);
-	for (int i = 0; i < 81 && count < blank; i++)
-	{
-		mem = b[i];
-		b[i] = 0;
-		if (isU(b))
+	int count;
+	do {
+		count = 0;
+		generateFinal(11, b);
+		for (int i = 0; i < 81 && count < blank; i++)
 		{
-			count++;
-			continue;
+			mem = b[i];
+			b[i] = 0;
+			if (isU(b))
+			{
+				count++;
+				continue;
+			}
+			b[i] = mem;
 		}
-		b[i] = mem;
-	}
+	} while (count >= blank);
 	b.copyTo(result);
 }
 
 void SudokuSolver::generate(int number, int lower, int upper, bool unique, int result[][81])
 {
 	srand(time(NULL));
-	int blank = lower + (upper - lower) != 0 ? rand() % (upper - lower) : 0;
+	int blank = lower + (((upper - lower) != 0) ? rand() % (upper - lower) : 0);
 	std::unordered_set<std::string> set;
 	if (unique)
 	{
@@ -531,8 +549,33 @@ void SudokuSolver::generate(int number, int lower, int upper, bool unique, int r
 			auto got = set.find(s);
 			if (got == set.end())
 				set.insert(s);
-			else 
+			else
 				i--;
 		}
+	}
+}
+bool SudokuSolver::solve(int puzzle[], int solution[])
+{
+	SudokuBoard b(puzzle);
+	int x = INT_MIN;
+	if (fill(b, x))
+	{
+		b.copyTo(solution);
+		return true;
+	}
+	else
+		return false;
+}
+void SudokuSolver::generateHard(int number, int result[][81])
+{
+	std::vector<std::shared_ptr<SudokuBoard>> puzzles;
+	readFileLine("sudoku17.txt", puzzles);
+	srand(time(NULL));
+	int start = rand() % (puzzles.size() - number - 1);
+	int diff[81];
+	for (int i = 0; i < number; i++)
+	{
+		auto p = *puzzles[i];
+		p.copyTo(result[i]);
 	}
 }

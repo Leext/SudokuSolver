@@ -11,7 +11,7 @@ public:
 	{
 		return _board[i];
 	}
-	int loc(int x, int y)
+	int loc(int x, int y) const
 	{
 		return _board[x * 9 + y];
 	}
@@ -91,23 +91,16 @@ public:
 	SudokuSolver();
 	~SudokuSolver();
 	static bool readFile(char fileName[], SudokuBoard &board);
-	static std::vector<std::shared_ptr<SudokuBoard>> readFile(char fileName[]);
-	static bool check(SudokuBoard& board);
+	static void readFile(char fileName[],std::vector<std::shared_ptr<SudokuBoard>>&);
+	static void readFileLine(char fileName[], std::vector<std::shared_ptr<SudokuBoard>>&);
+	static bool check(const SudokuBoard& board);
 	SudokuBoard* solve(SudokuBoard& board);
 	bool dfs(SudokuBoard& board);
 	void generate(SudokuBoard& board, int initNum);
 	std::string generateN(int n, SudokuBoard& board);
-	static void generateFinal(int initNum, int result[81]);
-	static void generateFinal(int initNum, SudokuBoard& result);
-	static bool fill(SudokuBoard& board, int &tryCount);
-	static double evalDifficulty(SudokuBoard board);
 	static bool isU(SudokuBoard board);
-	static bool search(SudokuBoard& board, int&);
-	static void makeBlank(SudokuBoard& board, int num);
 	static void generate(int number, int mode, int result[][81]);
-	static void generate(int blank, int result[81]);
 	static void generate(int number, int lower, int upper, bool unique, int result[][81]);
-	static void generateU(int n, int result[81]);
 	static bool solve(int puzzle[], int solution[]);
 	static int loc(int x, int y)
 	{
@@ -118,5 +111,14 @@ private:
 	FILE *output;
 	int _solveCount, _solveLimit;
 	std::vector<std::shared_ptr<std::string>>* solutions;
+	static void generateHard(int number, int result[][81]);
+	static void generateU(int n, int result[81]);
+	static void generate(int blank, int result[81]);
+	static bool search(SudokuBoard& board, int&);
+	static void makeBlank(SudokuBoard& board, int num);
+	static void generateFinal(int initNum, int result[81]);
+	static void generateFinal(int initNum, SudokuBoard& result);
+	static bool fill(SudokuBoard& board, int &tryCount);
+	static double evalDifficulty(SudokuBoard board);
 };
 
