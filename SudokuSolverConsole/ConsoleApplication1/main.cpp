@@ -8,8 +8,10 @@ typedef bool(*Solve)(int puzzle[], int solution[]);
 typedef bool(*Check)(int board[81]);
 typedef int(*GetFeasible)(int board[81], int x, int y);
 typedef char*(*GenerateN)(int n);
+typedef void(*GenerateC)(int number, int result[][81]);
 GenerateM generateM;
 GenerateR generateR;
+GenerateC generateC;
 Solve solve;
 Check check;
 GetFeasible getFeasible;
@@ -21,12 +23,17 @@ int main(int argc, char **argv)
 {
 	HMODULE hdll = LoadLibrary(L"Core.dll");
 	if (!hdll)
+	{
+		printf("cannot find Core.dll");
 		return 0;
-	generateM = (GenerateM)GetProcAddress(hdll, "generateM");
-	generateR = (GenerateR)GetProcAddress(hdll, "generateR");
-	solve = (Solve)GetProcAddress(hdll, "solve");
-	check = (Check)GetProcAddress(hdll, "check");
-	generateN = (GenerateN)GetProcAddress(hdll, "generateN");
+	}
+	generateM = (GenerateM)GetProcAddress(hdll, "?generate@@YAXHHQEAY0FB@H@Z");
+	generateR = (GenerateR)GetProcAddress(hdll, "?generate@@YAXHHH_NQEAY0FB@H@Z");
+	generateC = (GenerateC)GetProcAddress(hdll, "?generate@@YAXHQEAY0FB@H@Z");
+	solve = (Solve)GetProcAddress(hdll, "?solve@@YA_NQEAH0@Z");
+	check = (Check)GetProcAddress(hdll, "?check@@YA_NQEAH@Z");
+	generateN = (GenerateN)GetProcAddress(hdll, "?generateN@@YAPEADH@Z");
+	getFeasible = (GetFeasible)GetProcAddress(hdll, "?getFeasible@@YAHQEAHHH@Z");
 
 	bool cFlag, sFlag, nFlag, mFlag, rFlag, uFlag;
 	cFlag = sFlag = nFlag = mFlag = rFlag = uFlag = false;
@@ -139,9 +146,9 @@ int main(int argc, char **argv)
 				argv[p][i] = '\0';
 				size_t end1, end2;
 				try
-				{ 
-				lower = std::stoi(std::string(argv[p]), &end1);
-				upper = std::stoi(std::string(&argv[p][i + 1]), &end2);
+				{
+					lower = std::stoi(std::string(argv[p]), &end1);
+					upper = std::stoi(std::string(&argv[p][i + 1]), &end2);
 				}
 				catch (...)
 				{
