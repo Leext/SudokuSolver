@@ -38,12 +38,15 @@ extern "C" _declspec(dllexport) int getFeasible(int board[81], int x, int y)
 	return b.getFeasible(x, y);
 }
 
-extern "C" _declspec(dllexport) const char* generateN(int n)
+extern "C" _declspec(dllexport) char* generateN(int n)
 {
 	SudokuBoard board;
 	SudokuSolver solver;
 	board.set(0, 0, 4);
-	return (solver.generateN(n, board).c_str());
+	std::string str = solver.generateN(n, board);
+	char *r = new char[str.size() + 1];
+	memcpy(r, str.c_str(), str.size());
+	return r;
 }
 
 extern "C" _declspec(dllexport) int* generate(int mode)
