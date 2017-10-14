@@ -6,16 +6,23 @@
 
 extern "C" _declspec(dllexport) void generateM(int number, int mode, int result[][81])
 {
+	if (number > 10000 || number < 1)
+		throw std::invalid_argument("invalid number");
 	SudokuSolver::generate(number, mode, result);
 }
 
 extern "C" _declspec(dllexport) void generateR(int number, int lower, int upper, bool unique, int result[][81])
 {
+	if (number > 10000 || number < 1)
+		throw std::invalid_argument("invalid number");
 	SudokuSolver::generate(number, lower, upper, unique, result);
 }
 
 extern "C" _declspec(dllexport) bool solve(int puzzle[], int solution[])
 {
+	for (int i = 0; i < 81; i++)
+		if (puzzle[i] > 9 || puzzle[i] < 0)
+			throw std::invalid_argument("invalid puzzle");
 	return SudokuSolver::solve(puzzle, solution);
 }
 
