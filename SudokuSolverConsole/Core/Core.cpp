@@ -49,11 +49,7 @@ extern "C" _declspec(dllexport) char* generateN(int n)
 	return r;
 }
 
-extern "C" _declspec(dllexport) int* generate(int mode)
+extern "C" _declspec(dllexport) void generate(int number,int result[][81])
 {
-	int r[1][81];
-	SudokuSolver::generate(1, mode, r);
-	int *result = new int[81];
-	memcpy(result, r[0], sizeof(int) * 81);
-	return result;
+	SudokuSolver::generate(number, result);
 }

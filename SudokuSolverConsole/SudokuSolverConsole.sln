@@ -5,11 +5,14 @@ VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SudokuSolverConsole", "SudokuSolverConsole\SudokuSolverConsole.vcxproj", "{AB3CEF07-1B06-4CAA-AD9D-7F517BB7BFC3}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnitTest1", "UnitTest1\UnitTest1.vcxproj", "{769D8C36-0345-450A-A8BB-13C0AD1022D5}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Core", "Core\Core.vcxproj", "{E6036611-B96F-4C3A-97C7-22652AEEF584}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SudokuSolverConsoleCore", "ConsoleApplication1\ConsoleApplication1.vcxproj", "{F775FF86-B535-42A5-A6B7-0C2729D684CE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{18AF8ABD-FE1A-43EE-B743-560FA8F48EC5}"
+	ProjectSection(SolutionItems) = preProject
+		argtest.txt = argtest.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,14 +30,6 @@ Global
 		{AB3CEF07-1B06-4CAA-AD9D-7F517BB7BFC3}.Release|x64.Build.0 = Release|x64
 		{AB3CEF07-1B06-4CAA-AD9D-7F517BB7BFC3}.Release|x86.ActiveCfg = Release|Win32
 		{AB3CEF07-1B06-4CAA-AD9D-7F517BB7BFC3}.Release|x86.Build.0 = Release|Win32
-		{769D8C36-0345-450A-A8BB-13C0AD1022D5}.Debug|x64.ActiveCfg = Debug|x64
-		{769D8C36-0345-450A-A8BB-13C0AD1022D5}.Debug|x64.Build.0 = Debug|x64
-		{769D8C36-0345-450A-A8BB-13C0AD1022D5}.Debug|x86.ActiveCfg = Debug|Win32
-		{769D8C36-0345-450A-A8BB-13C0AD1022D5}.Debug|x86.Build.0 = Debug|Win32
-		{769D8C36-0345-450A-A8BB-13C0AD1022D5}.Release|x64.ActiveCfg = Release|x64
-		{769D8C36-0345-450A-A8BB-13C0AD1022D5}.Release|x64.Build.0 = Release|x64
-		{769D8C36-0345-450A-A8BB-13C0AD1022D5}.Release|x86.ActiveCfg = Release|Win32
-		{769D8C36-0345-450A-A8BB-13C0AD1022D5}.Release|x86.Build.0 = Release|Win32
 		{E6036611-B96F-4C3A-97C7-22652AEEF584}.Debug|x64.ActiveCfg = Debug|x64
 		{E6036611-B96F-4C3A-97C7-22652AEEF584}.Debug|x64.Build.0 = Debug|x64
 		{E6036611-B96F-4C3A-97C7-22652AEEF584}.Debug|x86.ActiveCfg = Debug|Win32

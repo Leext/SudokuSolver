@@ -126,7 +126,7 @@ bool SudokuSolver::dfs(SudokuBoard &board)
 	if (target.first == -1) // end
 	{
 		_solveCount++;
-		solutions->push_back(board.toString());
+		solutions->push_back(board);
 		return _solveCount >= _solveLimit;
 	}
 	if (target.second == -1) // no solution
@@ -200,7 +200,7 @@ SudokuBoard *SudokuSolver::solve(SudokuBoard &board)
 	SudokuBoard *r = new SudokuBoard(board);
 	_solveCount = 0;
 	_solveLimit = 1;
-	solutions = new std::vector<std::shared_ptr<std::string>>();
+	solutions = new std::vector<SudokuBoard>();
 	if (!dfs(*r))
 		return NULL;
 	return r;
@@ -230,10 +230,10 @@ std::string SudokuSolver::generateN(int n, SudokuBoard &board)
 	//r += generate(board).toString() + '\n';
 	_solveCount = 0;
 	_solveLimit = n;
-	solutions = new std::vector<std::shared_ptr<std::string>>();
+	solutions = new std::vector<SudokuBoard>();
 	generate(board, 0);
 	for (auto &s : *solutions)
-		r += *s + '\n';
+		r += *s.toString() + '\n';
 	delete solutions;
 	return r;
 }
@@ -537,7 +537,17 @@ void SudokuSolver::generateU(int blank, int result[81])
 	} while (count < blank);
 	b.copyTo(result);
 }
-
+void SudokuSolver::generate(int number, int result[][81])
+{
+	SudokuSolver solver;
+	solver._solveCount = 0;
+	solver._solveLimit = number;
+	solver.solutions = new std::vector<SudokuBoard>();
+	SudokuBoard board;
+	solver.generate(board, 0);
+	for (int i = 0; i < solver.solutions->size(); i++)
+		(*solver.solutions)[i].copyTo(result[i]);
+}
 void SudokuSolver::generate(int number, int lower, int upper, bool unique, int result[][81])
 {
 	srand(time(NULL));

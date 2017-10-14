@@ -103,6 +103,7 @@ public:
 	void generate(SudokuBoard& board, int initNum);
 	std::string generateN(int n, SudokuBoard& board);
 	static bool isU(SudokuBoard board);
+	static void generate(int number, int result[][81]);
 	static void generate(int number, int mode, int result[][81]);
 	static void generate(int number, int lower, int upper, bool unique, int result[][81]);
 	static bool solve(int puzzle[], int solution[]);
@@ -110,11 +111,11 @@ public:
 	{
 		return x * 9 + y;
 	}
+	int _solveCount, _solveLimit;
+	std::vector<SudokuBoard>* solutions;
 private:
 	SudokuBoard *solution;
 	FILE *output;
-	int _solveCount, _solveLimit;
-	std::vector<std::shared_ptr<std::string>>* solutions;
 	static void generateHard(int number, int result[][81]);
 	static void generateU(int n, int result[81]);
 	static void generate(int blank, int result[81]);

@@ -44,8 +44,10 @@ void testBase()
 	b = solver.solve(board);
 	assert(b == NULL);
 
-	//solver.generate(board);
-	solver.generateN(3, board);
+	int result[10][81];
+	SudokuSolver::generate(10, result);
+	for (int i = 0; i < 10; i++)
+		assert(SudokuSolver::check(SudokuBoard(result[i])));
 }
 void testArgM()
 {
