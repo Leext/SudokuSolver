@@ -7,7 +7,7 @@ typedef void(*GenerateR)(int number, int lower, int upper, bool unique, int resu
 typedef bool(*Solve)(int puzzle[], int solution[]);
 typedef bool(*Check)(int board[81]);
 typedef int(*GetFeasible)(int board[81], int x, int y);
-typedef const char*(*GenerateN)(int n);
+typedef char*(*GenerateN)(int n);
 GenerateM generateM;
 GenerateR generateR;
 Solve solve;
@@ -41,8 +41,18 @@ int main(int argc, char **argv)
 				cFlag = true;
 				if (++p >= argc)
 					throw std::invalid_argument("not enough arg");
-				number = std::stoi(std::string(argv[p]));
-				if (number < 1 || number > 1000000)
+				size_t end;
+				try
+				{
+					number = std::stoi(std::string(argv[p]), &end);
+				}
+				catch (...)
+				{
+					std::string e("invalid number ");
+					e += argv[p];
+					throw std::invalid_argument(e);;
+				}
+				if (number < 1 || number > 1000000 || strlen(argv[p]) != end)
 				{
 					std::string e("invalid number ");
 					e += argv[p];
@@ -68,8 +78,17 @@ int main(int argc, char **argv)
 				nFlag = true;
 				if (++p >= argc)
 					throw std::invalid_argument("not enough arg");
-				number = std::stoi(std::string(argv[p]));
-				if (number < 1 || number > 10000)
+				size_t end;
+				try {
+					number = std::stoi(std::string(argv[p]), &end);
+				}
+				catch (...)
+				{
+					std::string e("invalid number ");
+					e += argv[p];
+					throw std::invalid_argument(e);;
+				}
+				if (number < 1 || number > 10000 || strlen(argv[p]) != end)
 				{
 					std::string e("invalid number ");
 					e += argv[p];
@@ -81,8 +100,17 @@ int main(int argc, char **argv)
 				mFlag = true;
 				if (++p >= argc)
 					throw std::invalid_argument("not enough arg");
-				mode = std::stoi(std::string(argv[p]));
-				if (mode < 1 || mode > 3)
+				size_t end;
+				try {
+					mode = std::stoi(std::string(argv[p]), &end);
+				}
+				catch (...)
+				{
+					std::string e("invalid number ");
+					e += argv[p];
+					throw std::invalid_argument(e);;
+				}
+				if (mode < 1 || mode > 3 || strlen(argv[p]) != end)
 				{
 					std::string e("invalid mode ");
 					e += argv[p];
@@ -109,15 +137,26 @@ int main(int argc, char **argv)
 					throw std::invalid_argument(e);
 				}
 				argv[p][i] = '\0';
-				lower = std::stoi(std::string(argv[p]));
-				upper = std::stoi(std::string(&argv[p][i + 1]));
-				if (lower < 20 || lower >55)
+				size_t end1, end2;
+				try
+				{ 
+				lower = std::stoi(std::string(argv[p]), &end1);
+				upper = std::stoi(std::string(&argv[p][i + 1]), &end2);
+				}
+				catch (...)
+				{
+					std::string e("invalid number ");
+					argv[p][i] = '~';
+					e += argv[p];
+					throw std::invalid_argument(e);;
+				}
+				if (lower < 20 || lower >55 || strlen(argv[p]) != end1)
 				{
 					std::string e("invalid lower ");
 					e += argv[p];
 					throw std::invalid_argument(e);
 				}
-				if (upper < 20 || upper > 55)
+				if (upper < 20 || upper > 55 || strlen(&argv[p][i + 1]) != end2)
 				{
 					std::string e("invalid upper ");
 					e += &argv[p][i + 1];
@@ -232,5 +271,5 @@ int main(int argc, char **argv)
 
 int parseArg()
 {
-
+	return 0;
 }
