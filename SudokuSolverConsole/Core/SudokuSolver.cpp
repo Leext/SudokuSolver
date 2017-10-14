@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#define _CRT_SECURE_NO_WARNINGS
 #include "SudokuSolver.h"
 #include <cstdio>
 #include <stack>
@@ -468,6 +468,11 @@ void SudokuSolver::generate(int number, int mode, int result[][81])
 	srand(time(NULL));
 	switch (mode)
 	{
+	case 0:
+		r = 45;
+		tryCountL = 0;
+		tryCountR = 200000;
+		break;
 	case 2:
 		r = 60;
 		tryCountL = 200;
@@ -485,6 +490,7 @@ void SudokuSolver::generate(int number, int mode, int result[][81])
 	}
 	SudokuBoard b;
 	int difficulty;
+	std::unordered_set<std::string> set;
 	for (int i = 0; i < number; i++)
 	{
 		while (true)
@@ -496,6 +502,12 @@ void SudokuSolver::generate(int number, int mode, int result[][81])
 				break;
 			b.clear();
 		}
+		auto s = SudokuBoard::toLineString(result[i]);
+		auto got = set.find(s);
+		if (got == set.end())
+			set.insert(s);
+		else
+			i--;
 		b.copyTo(result[i]);
 	}
 }
