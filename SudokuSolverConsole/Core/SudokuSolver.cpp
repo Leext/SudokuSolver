@@ -519,21 +519,23 @@ void SudokuSolver::generateU(int blank, int result[81])
 	SudokuBoard b;
 	int mem;
 	int count;
+	const int seq[9] = { 0,3,6,1,4,7,2,5,8 };
 	do {
 		count = 0;
 		generateFinal(11, b);
-		for (int i = 0; i < 81 && count < blank; i++)
-		{
-			mem = b[i];
-			b[i] = 0;
-			if (isU(b))
+		for (int j = 0; j < 9; j++)
+			for (int i = seq[j] * 9; i < seq[j] * 9 + 9 && count < blank; i++)
 			{
-				count++;
-				continue;
+				mem = b[i];
+				b[i] = 0;
+				if (isU(b))
+				{
+					count++;
+					continue;
+				}
+				b[i] = mem;
 			}
-			b[i] = mem;
-		}
-	} while (count >= blank);
+	} while (count < blank);
 	b.copyTo(result);
 }
 
