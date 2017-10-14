@@ -66,7 +66,9 @@ void SudokuSolver::readFileLine(char fileName[], std::vector<std::shared_ptr<Sud
 	FILE *input = fopen(fileName, "r");
 	if (input == NULL)
 	{
-		printf("invalid file path %s", fileName);
+		std::string e("invalid file path ");
+		e += fileName;
+		throw std::invalid_argument(e);
 		return;
 	}
 	char buf[100];
@@ -502,7 +504,7 @@ void SudokuSolver::generate(int number, int mode, int result[][81])
 				break;
 			b.clear();
 		}
-		auto s = SudokuBoard::toLineString(result[i]);
+		auto s = b.toLineString();
 		auto got = set.find(s);
 		if (got == set.end())
 			set.insert(s);

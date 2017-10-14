@@ -81,6 +81,10 @@ public:
 			r[i] = b[i];
 		return r;
 	}
+	std::string toLineString()
+	{
+		return toLineString(_board);
+	}
 private:
 	int _board[81];
 };
