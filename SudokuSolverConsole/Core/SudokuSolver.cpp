@@ -602,7 +602,7 @@ void SudokuSolver::generateHard(int number, int result[][81])
 	int diff[81];
 	for (int i = 0; i < number; i++)
 	{
-		auto p = *puzzles[i];
+		auto p = *puzzles[start + i];
 		p.copyTo(result[i]);
 	}
 }
